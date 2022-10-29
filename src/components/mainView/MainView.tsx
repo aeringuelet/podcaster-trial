@@ -6,11 +6,16 @@ import PodcastCard from '../podcastCard/PodcastCard';
 
 const MainView = () => {
     const podcasts = useAppSelector((state: RootState) => state.podcasts.list);
+    const podcastsStatus = useAppSelector(
+        (state: RootState) => state.podcasts.status
+    );
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(fetchAllPodcasts());
-    }, []);
+        if (podcastsStatus === 'idle') {
+            dispatch(fetchAllPodcasts());
+        }
+    }, [podcastsStatus, dispatch]);
 
     return (
         <div className='grid grid-cols-4 gap-4 ml-48 mr-48 mt-4 justify-items-center'>

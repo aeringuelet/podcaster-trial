@@ -1,15 +1,7 @@
 import { Link } from 'react-router-dom';
+import { PodcastGeneralInfo } from '../../state/podcastSlice';
 
-const PodcastCard = ({
-    podcast
-}: {
-    podcast: {
-        'im:image': Array<{ label: string }>;
-        'im:artist': { label: string };
-        'im:name': { label: string };
-        id: { attributes: { 'im:id': string }; label: string };
-    };
-}) => {
+const PodcastCard = ({ podcast }: { podcast: PodcastGeneralInfo }) => {
     const imgUrl = podcast['im:image'][2].label;
     const author = podcast['im:artist'].label;
     const title = podcast['im:name'].label;

@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import podcastDetailSlice from '../state/podcastDetailSlice';
 import podcastsReducer from '../state/podcastSlice';
 
 export const store = configureStore({
     reducer: {
-        podcasts: podcastsReducer
+        podcasts: podcastsReducer,
+        podcastDetail: podcastDetailSlice
     }
 });
 

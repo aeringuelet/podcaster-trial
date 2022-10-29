@@ -1,8 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+export type PodcastGeneralInfo = {
+    'im:image': Array<{ label: string }>;
+    'im:artist': { label: string };
+    'im:name': { label: string };
+    id: { attributes: { 'im:id': string }; label: string };
+    summary: { label: string };
+};
+
 export interface PodcastsState {
-    list: Array<any>;
-    status?: 'fetching' | 'failed' | 'idle';
+    list: Array<PodcastGeneralInfo>;
+    status: 'fetching' | 'failed' | 'idle' | 'succeeded';
 }
 
 const initialState: PodcastsState = {
@@ -24,12 +32,12 @@ export const fetchAllPodcasts = createAsyncThunk(
 );
 
 export const podcastsSlice = createSlice({
-    name: 'counter',
+    name: 'podcasts',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchAllPodcasts.fulfilled, (state, action) => {
-            state.status = 'idle';
+            state.status = 'succeeded';
             state.list = action.payload;
         });
         builder.addCase(fetchAllPodcasts.rejected, (state) => {
@@ -41,7 +49,5 @@ export const podcastsSlice = createSlice({
         });
     }
 });
-
-// export const {} = podcastsSlice.actions;
 
 export default podcastsSlice.reducer;
