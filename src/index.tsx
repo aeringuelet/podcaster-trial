@@ -3,18 +3,34 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { store } from './app/store';
+import Header from './components/header/Header';
 import MainView from './components/mainView/MainView';
 import PodcastDetail from './components/podcastDetail/PodcastDetail';
+import PodcastEpisodeDetail from './components/podcastDetail/PodcastEpisodeDetail';
+import PodcastEpisodes from './components/podcastDetail/PodcastEpisodes';
 import './index.css';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <MainView />
-    },
-    {
-        path: '/podcast/:podcastId',
-        element: <PodcastDetail />
+        element: <Header />,
+        children: [
+            { path: '', element: <MainView /> },
+            {
+                path: '/podcast/:podcastId',
+                element: <PodcastDetail />,
+                children: [
+                    {
+                        path: '',
+                        element: <PodcastEpisodes />
+                    },
+                    {
+                        path: 'episode/:episodeId',
+                        element: <PodcastEpisodeDetail />
+                    }
+                ]
+            }
+        ]
     }
 ]);
 

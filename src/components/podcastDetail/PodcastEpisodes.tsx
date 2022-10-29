@@ -1,6 +1,8 @@
+import { Link, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 
-const PodcastDetailEpisodes = () => {
+const PodcastEpisodes = () => {
+    const { podcastId } = useParams();
     const podcastDetail = useAppSelector((state) => state.podcastDetail.record);
     const podcastDetailEpisodes = useAppSelector(
         (state) => state.podcastDetail.episodes
@@ -26,11 +28,16 @@ const PodcastDetailEpisodes = () => {
                         {podcastDetailEpisodes?.map((episode, index) => {
                             const backgroundStyle =
                                 index % 2 === 0 ? 'bg-neutral-100' : '';
+                            const episodeLink = `/podcast/${podcastId}/episode/${episode.id}`;
                             return (
                                 <tr
                                     key={episode.id}
                                     className={`h-14 hover:bg-neutral-400 hover:text-white ${backgroundStyle}`}>
-                                    <td className='pl-4'>{episode.title}</td>
+                                    <td className='pl-4 underline underline-offset-2 text-sky-700 hover:text-white'>
+                                        <Link to={episodeLink}>
+                                            {episode.title}
+                                        </Link>
+                                    </td>
                                     <td>
                                         {new Date(
                                             episode.publicationDate
@@ -47,4 +54,4 @@ const PodcastDetailEpisodes = () => {
     );
 };
 
-export default PodcastDetailEpisodes;
+export default PodcastEpisodes;

@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import usePrevious from '../../app/usePrevious';
 import {
     fetchPodcastDetail,
     fetchPodcastEpisodes
 } from '../../state/podcastDetailSlice';
-import PodcastDetailEpisodes from './PodcastDetailEpisodes';
+import PodcastDetailEpisodes from './PodcastEpisodes';
 import PodcastDetailSidebar from './PodcastDetailSidebar';
 
 const PodcastDetail = () => {
@@ -36,7 +36,7 @@ const PodcastDetail = () => {
                 <PodcastDetailSidebar />
             </div>
             <div className='basis-3/4'>
-                <PodcastDetailEpisodes />
+                <Outlet />
             </div>
         </div>
     );
