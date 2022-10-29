@@ -9,7 +9,7 @@ const PodcastEpisodes = () => {
     );
 
     return (
-        <div className='flex flex-col'>
+        <div className='flex flex-col w-10/12'>
             <div className='flex flex-row items-center h-16 rounded-lg px-6 py-4 mb-4 shadow-lg bg-white'>
                 <p className='text-2xl font-medium'>
                     Episodes: {podcastDetail?.trackCount}
@@ -19,7 +19,7 @@ const PodcastEpisodes = () => {
                 <table className='table-fixed w-full'>
                     <thead>
                         <tr className='text-left border-b-2 h-14 text-lg'>
-                            <th className='w-8 pl-4'>Title</th>
+                            <th className='w-6 pl-4'>Title</th>
                             <th className='w-2'>Date</th>
                             <th className='w-1'>Duration</th>
                         </tr>

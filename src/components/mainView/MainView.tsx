@@ -18,7 +18,7 @@ const MainView = () => {
     }, [podcastsStatus, dispatch]);
 
     return (
-        <div className='grid grid-cols-4 gap-4 ml-48 mr-48 mt-4 justify-items-center'>
+        <div className='grid grid-cols-4 gap-4 mx-48 mt-4 justify-items-center'>
             <>
                 {podcasts?.length
                     ? podcasts.map((podcast) => {

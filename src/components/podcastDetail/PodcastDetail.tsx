@@ -6,7 +6,6 @@ import {
     fetchPodcastDetail,
     fetchPodcastEpisodes
 } from '../../state/podcastDetailSlice';
-import PodcastDetailEpisodes from './PodcastEpisodes';
 import PodcastDetailSidebar from './PodcastDetailSidebar';
 
 const PodcastDetail = () => {
@@ -31,11 +30,11 @@ const PodcastDetail = () => {
     }, [podcastId, dispatch, previousPodcastId]);
 
     return (
-        <div className='flex flex-row mt-10 mx-32'>
+        <div className='flex flex-row mt-10 mx-16'>
             <div className='basis-1/4 flex flex-col items-center'>
                 <PodcastDetailSidebar />
             </div>
-            <div className='basis-3/4'>
+            <div className='basis-3/4 items-center'>
                 <Outlet />
             </div>
         </div>

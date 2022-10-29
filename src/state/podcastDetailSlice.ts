@@ -18,6 +18,8 @@ export type PodcastDetailEpisodes = {
     title: string;
     duration: string;
     publicationDate: string;
+    audioLink: string;
+    summary: string;
 };
 
 export interface PodcastsState {
@@ -97,12 +99,20 @@ export const podcastDetailSlice = createSlice({
                 )[0].textContent as string;
                 const id = episode.getElementsByTagName('guid')[0]
                     .textContent as string;
+                const podcastAudioLink = episode
+                    .getElementsByTagName('enclosure')[0]
+                    .attributes.getNamedItem('url')?.value as string;
+                const summary = episode.getElementsByTagName(
+                    'itunes:summary'
+                )[0].textContent as string;
 
                 parsedEpisodes.push({
                     id,
                     title,
                     publicationDate,
-                    duration
+                    duration,
+                    audioLink: podcastAudioLink,
+                    summary
                 });
             }
 
