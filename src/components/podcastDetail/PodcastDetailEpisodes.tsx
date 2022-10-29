@@ -1,23 +1,11 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../app/hooks';
-import usePrevious from '../../app/usePrevious';
-import { fetchPodcastEpisodes } from '../../state/podcastDetailSlice';
 
 const PodcastDetailEpisodes = () => {
-    const dispatch = useDispatch();
     const podcastDetail = useAppSelector((state) => state.podcastDetail.record);
     const podcastDetailEpisodes = useAppSelector(
         (state) => state.podcastDetail.episodes
     );
 
-    const previousFeedUrl = usePrevious(podcastDetail?.feedUrl);
-    useEffect(() => {
-        if (previousFeedUrl !== podcastDetail?.feedUrl) {
-            // @ts-ignore
-            dispatch(fetchPodcastEpisodes(podcastDetail?.feedUrl));
-        }
-    }, [previousFeedUrl, podcastDetail?.feedUrl, dispatch]);
     return (
         <div className='flex flex-col'>
             <div className='flex flex-row items-center h-16 rounded-lg px-6 py-4 mb-4 shadow-lg bg-white'>
@@ -42,9 +30,7 @@ const PodcastDetailEpisodes = () => {
                                 <tr
                                     key={episode.id}
                                     className={`h-14 hover:bg-neutral-400 hover:text-white ${backgroundStyle}`}>
-                                    <td className='pl-4'>
-                                        {episode.title}
-                                    </td>
+                                    <td className='pl-4'>{episode.title}</td>
                                     <td>
                                         {new Date(
                                             episode.publicationDate

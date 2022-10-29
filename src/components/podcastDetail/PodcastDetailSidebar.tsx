@@ -10,7 +10,7 @@ const PodcastDetailSidebar = () => {
     )?.summary.label;
 
     return (
-        <div className='rounded-lg p-6 flex flex-col content-center w-80 shadow-xl bg-white'>
+        <div className='rounded-lg p-6 flex flex-col w-96 shadow-xl bg-white'>
             <img
                 src={podcastDetail?.artworkUrl600}
                 className='rounded-lg h-48 w-48 z-10 self-center'
