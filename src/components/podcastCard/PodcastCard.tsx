@@ -14,9 +14,11 @@ const PodcastCard = ({ podcast }: { podcast: PodcastGeneralInfo }) => {
                     className='rounded-full h-48 w-48 z-10'
                     alt='podcast-splash'
                 />
-                <p className='text-lg font-semibold'>{title.toUpperCase()}</p>
-                <p className='text-gray-500'>Author: {author}</p>
-                <div className='rounded-2xl w-72 h-48 absolute z-0 top-16 shadow-lg'></div>
+                <p className='text-lg font-semibold z-10'>
+                    {title.toUpperCase()}
+                </p>
+                <p className='text-gray-500 z-10'>Author: {author}</p>
+                <div className='rounded-2xl w-72 h-48 absolute z-0 top-16 shadow-lg bg-white'></div>
             </div>
         </Link>
     );
