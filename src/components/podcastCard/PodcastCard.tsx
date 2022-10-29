@@ -16,7 +16,7 @@ const PodcastCard = ({ podcast }: { podcast: PodcastGeneralInfo }) => {
                 />
                 <p className='text-lg font-semibold'>{title.toUpperCase()}</p>
                 <p className='text-gray-500'>Author: {author}</p>
-                <div className='border-2 w-72 h-48 absolute z-0 top-16'></div>
+                <div className='rounded-2xl w-72 h-48 absolute z-0 top-16 shadow-lg'></div>
             </div>
         </Link>
     );
