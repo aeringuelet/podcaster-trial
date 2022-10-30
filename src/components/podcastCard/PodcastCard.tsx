@@ -8,7 +8,7 @@ const PodcastCard = ({ podcast }: { podcast: PodcastGeneralInfo }) => {
     const podcastId = podcast.id.attributes['im:id'];
     return (
         <Link to={`/podcast/${podcastId}`}>
-            <div className='flex flex-col content-center items-center w-64 relative mb-32'>
+            <div className='flex flex-col items-center w-64 relative mb-32'>
                 <img
                     src={imgUrl}
                     className='rounded-full h-48 w-48 z-10'
