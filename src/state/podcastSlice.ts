@@ -10,11 +10,13 @@ export type PodcastGeneralInfo = {
 
 export interface PodcastsState {
     list: Array<PodcastGeneralInfo>;
+    filteredList: Array<PodcastGeneralInfo>;
     status: 'fetching' | 'failed' | 'idle' | 'succeeded';
 }
 
 const initialState: PodcastsState = {
     list: [],
+    filteredList: [],
     status: 'idle'
 };
 
@@ -34,20 +36,42 @@ export const fetchAllPodcasts = createAsyncThunk(
 export const podcastsSlice = createSlice({
     name: 'podcasts',
     initialState,
-    reducers: {},
+    reducers: {
+        filterPodcasts: (state, action) => {
+            const filteredPodcasts = state.list.filter((podcast) => {
+                const termToSearch = action.payload;
+                if (
+                    podcast['im:artist'].label
+                        .toLowerCase()
+                        .search(termToSearch) !== -1 ||
+                    podcast['im:name'].label
+                        .toLowerCase()
+                        .search(termToSearch) !== -1
+                ) {
+                    return true;
+                }
+                return false;
+            });
+            state.filteredList = filteredPodcasts;
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchAllPodcasts.fulfilled, (state, action) => {
             state.status = 'succeeded';
             state.list = action.payload;
+            state.filteredList = action.payload;
         });
         builder.addCase(fetchAllPodcasts.rejected, (state) => {
             state.status = 'failed';
             state.list = [];
+            state.filteredList = [];
         });
         builder.addCase(fetchAllPodcasts.pending, (state) => {
             state.status = 'fetching';
         });
     }
 });
+
+export const { filterPodcasts } = podcastsSlice.actions;
 
 export default podcastsSlice.reducer;
