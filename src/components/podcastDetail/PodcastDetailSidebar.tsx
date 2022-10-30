@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 
 const PodcastDetailSidebar = () => {
@@ -9,18 +9,25 @@ const PodcastDetailSidebar = () => {
         (podcast) => podcast.id.attributes['im:id'] === podcastId
     )?.summary.label;
 
+    const linkToPodcast = `/podcast/${podcastId}`;
     return (
         <div className='rounded-lg p-6 flex flex-col w-80 shadow-xl bg-white'>
-            <img
-                src={podcastDetail?.artworkUrl600}
-                className='rounded-lg h-48 w-48 z-10 self-center'
-                alt='podcast-splash'
-            />
+            <Link to={linkToPodcast} className='self-center'>
+                <img
+                    src={podcastDetail?.artworkUrl600}
+                    className='rounded-lg h-48 w-48 z-10'
+                    alt='podcast-splash'
+                />
+            </Link>
 
             <div className='border-b w-72 my-6'></div>
 
-            <p className='text-lg font-bold'>{podcastDetail?.trackName}</p>
-            <p className='italic text-base'>{`by ${podcastDetail?.artistName}`}</p>
+            <Link to={linkToPodcast}>
+                <p className='text-lg font-bold'>{podcastDetail?.trackName}</p>
+            </Link>
+            <Link to={linkToPodcast}>
+                <p className='italic text-base'>{`by ${podcastDetail?.artistName}`}</p>
+            </Link>
 
             <div className='border-b w-72 my-6'></div>
 
