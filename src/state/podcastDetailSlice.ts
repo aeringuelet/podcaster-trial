@@ -19,7 +19,7 @@ export type PodcastDetailEpisodes = {
     duration: string;
     publicationDate: string;
     audioLink: string;
-    summary: string;
+    summary: { __html: string };
 };
 
 export interface PodcastsState {
@@ -77,8 +77,6 @@ export const podcastDetailSlice = createSlice({
         });
 
         builder.addCase(fetchPodcastEpisodes.fulfilled, (state, action) => {
-            state.status = 'succeeded';
-
             const parsedXml = new window.DOMParser().parseFromString(
                 action.payload,
                 'text/xml'
@@ -102,9 +100,8 @@ export const podcastDetailSlice = createSlice({
                 const podcastAudioLink = episode
                     .getElementsByTagName('enclosure')[0]
                     .attributes.getNamedItem('url')?.value as string;
-                const summary = episode.getElementsByTagName(
-                    'itunes:summary'
-                )[0].textContent as string;
+                const summary = episode.getElementsByTagName('description')[0]
+                    .textContent as string;
 
                 parsedEpisodes.push({
                     id,
@@ -112,10 +109,11 @@ export const podcastDetailSlice = createSlice({
                     publicationDate,
                     duration,
                     audioLink: podcastAudioLink,
-                    summary
+                    summary: { __html: summary }
                 });
             }
 
+            state.status = 'succeeded';
             state.episodes = parsedEpisodes;
         });
         builder.addCase(fetchPodcastEpisodes.rejected, (state) => {
