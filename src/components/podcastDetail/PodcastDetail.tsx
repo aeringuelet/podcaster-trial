@@ -30,7 +30,7 @@ const PodcastDetail = () => {
     }, [podcastId, dispatch, previousPodcastId]);
 
     return (
-        <div className='flex flex-row mt-10 mx-16'>
+        <div className='flex flex-row  mx-16'>
             <div className='basis-1/4 flex flex-col items-center'>
                 <PodcastDetailSidebar />
             </div>
