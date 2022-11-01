@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { RootState } from '../../app/store';
-import { fetchAllPodcasts } from '../../state/podcastSlice';
+import { fetchAllPodcasts, fetchPodcasts } from '../../state/podcastSlice';
 import PodcastCard from '../podcastCard/PodcastCard';
 import SearchInput from './SearchInput';
 
@@ -16,7 +16,8 @@ const MainView = () => {
 
     useEffect(() => {
         if (podcastsStatus === 'idle') {
-            dispatch(fetchAllPodcasts());
+            // @ts-ignore
+            dispatch(fetchPodcasts());
         }
     }, [podcastsStatus, dispatch]);
 

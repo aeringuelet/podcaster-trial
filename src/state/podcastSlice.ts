@@ -53,13 +53,30 @@ export const podcastsSlice = createSlice({
                 return false;
             });
             state.filteredList = filteredPodcasts;
+        },
+        fetchPodcasts: (state, action) => {
+            if (action.payload) {
+                state.list = action.payload;
+                state.filteredList = action.payload;
+            }
         }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchAllPodcasts.fulfilled, (state, action) => {
+            const filteredData = action.payload.map(
+                (podcast: PodcastGeneralInfo) => {
+                    return {
+                        'im:artist': podcast['im:artist'],
+                        'im:image': podcast['im:image'],
+                        'im:name': podcast['im:name'],
+                        id: podcast.id,
+                        summary: podcast.summary
+                    };
+                }
+            );
             state.status = 'succeeded';
-            state.list = action.payload;
-            state.filteredList = action.payload;
+            state.list = filteredData;
+            state.filteredList = filteredData;
         });
         builder.addCase(fetchAllPodcasts.rejected, (state) => {
             state.status = 'failed';
@@ -72,6 +89,6 @@ export const podcastsSlice = createSlice({
     }
 });
 
-export const { filterPodcasts } = podcastsSlice.actions;
+export const { filterPodcasts, fetchPodcasts } = podcastsSlice.actions;
 
 export default podcastsSlice.reducer;

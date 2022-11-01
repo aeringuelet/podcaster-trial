@@ -62,7 +62,12 @@ export const fetchPodcastEpisodes = createAsyncThunk(
 export const podcastDetailSlice = createSlice({
     name: 'podcastDetail',
     initialState,
-    reducers: {},
+    reducers: {
+        fetchPodcastDetail: (state, action) => {
+            state.episodes = action.payload.episodes;
+            state.record = action.payload.record;
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchPodcastDetail.fulfilled, (state, action) => {
             state.status = 'succeeded';
