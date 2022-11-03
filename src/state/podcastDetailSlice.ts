@@ -43,19 +43,24 @@ export const fetchPodcastDetail = createAsyncThunk(
         const detailResponse = await response.json();
         const jsonContent = JSON.parse(detailResponse.contents).results[0];
 
-        return jsonContent;
+        return { data: jsonContent, podcastId };
     }
 );
 
 export const fetchPodcastEpisodes = createAsyncThunk(
     'podcastDetail/fetchEpisodes',
-    async (feedUrl: string) => {
+    async (payload: { feedUrl: string; podcastId: string }) => {
         const response = await fetch(
-            `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`
+            `https://api.allorigins.win/get?url=${encodeURIComponent(
+                payload.feedUrl
+            )}`
         );
         const feedResponse = await response.json();
 
-        return feedResponse.contents;
+        return {
+            responseXml: feedResponse.contents,
+            podcastId: payload.podcastId
+        };
     }
 );
 
@@ -63,15 +68,25 @@ export const podcastDetailSlice = createSlice({
     name: 'podcastDetail',
     initialState,
     reducers: {
-        fetchPodcastDetail: (state, action) => {
-            state.episodes = action.payload.episodes;
-            state.record = action.payload.record;
+        setEpisodesFromStorage: (state, action) => {
+            state.episodes = action.payload;
+        },
+        setPodcastDetailFromStorage: (state, action) => {
+            state.record = action.payload;
         }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchPodcastDetail.fulfilled, (state, action) => {
             state.status = 'succeeded';
-            state.record = action.payload;
+            state.record = action.payload.data;
+            localStorage.setItem(
+                `podcastDetail-${action.payload.podcastId}`,
+                JSON.stringify(action.payload.data)
+            );
+            localStorage.setItem(
+                `podcastDetail-${action.payload.podcastId}_lastUpdated`,
+                Date.now().toString()
+            );
         });
         builder.addCase(fetchPodcastDetail.rejected, (state) => {
             state.status = 'failed';
@@ -83,7 +98,7 @@ export const podcastDetailSlice = createSlice({
 
         builder.addCase(fetchPodcastEpisodes.fulfilled, (state, action) => {
             const parsedXml = new window.DOMParser().parseFromString(
-                action.payload,
+                action.payload.responseXml,
                 'text/xml'
             );
             const episodes = parsedXml.getElementsByTagName('item');
@@ -118,6 +133,15 @@ export const podcastDetailSlice = createSlice({
                 });
             }
 
+            localStorage.setItem(
+                `podcastDetailEpisodes-${action.payload.podcastId}`,
+                JSON.stringify(parsedEpisodes)
+            );
+            localStorage.setItem(
+                `podcastDetailEpisodes-${action.payload.podcastId}_lastUpdated`,
+                Date.now().toString()
+            );
+
             state.status = 'succeeded';
             state.episodes = parsedEpisodes;
         });
@@ -130,5 +154,8 @@ export const podcastDetailSlice = createSlice({
         });
     }
 });
+
+export const { setEpisodesFromStorage, setPodcastDetailFromStorage } =
+    podcastDetailSlice.actions;
 
 export default podcastDetailSlice.reducer;
