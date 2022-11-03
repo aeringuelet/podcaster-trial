@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { doesDataNeedRefresh } from '../app/helpers';
 
 export type PodcastDetail = {
     artistId: number;
@@ -35,70 +36,63 @@ const initialState: PodcastsState = {
 export const fetchPodcastDetail = createAsyncThunk(
     'podcastDetail/fetch',
     async (podcastId: number) => {
-        const response = await fetch(
-            `https://api.allorigins.win/get?url=${encodeURIComponent(
-                `https://itunes.apple.com/lookup?id=${podcastId}`
-            )}`
+        const storageDetailString = localStorage.getItem(
+            `podcastDetail-${podcastId}`
         );
-        const detailResponse = await response.json();
-        const jsonContent = JSON.parse(detailResponse.contents).results[0];
+        const lastUpdatedString = localStorage.getItem(
+            `podcastDetail-${podcastId}_lastUpdated`
+        );
+        if (storageDetailString && !doesDataNeedRefresh(lastUpdatedString)) {
+            const parsedDetails = JSON.parse(storageDetailString);
+            return { data: parsedDetails, podcastId };
+        } else {
+            const response = await fetch(
+                `https://api.allorigins.win/get?url=${encodeURIComponent(
+                    `https://itunes.apple.com/lookup?id=${podcastId}`
+                )}`
+            );
+            const detailResponse = await response.json();
+            const jsonContent = JSON.parse(detailResponse.contents).results[0];
 
-        return { data: jsonContent, podcastId };
+            localStorage.setItem(
+                `podcastDetail-${podcastId}`,
+                JSON.stringify(jsonContent)
+            );
+            localStorage.setItem(
+                `podcastDetail-${podcastId}_lastUpdated`,
+                Date.now().toString()
+            );
+
+            return { data: jsonContent, podcastId };
+        }
     }
 );
 
 export const fetchPodcastEpisodes = createAsyncThunk(
     'podcastDetail/fetchEpisodes',
     async (payload: { feedUrl: string; podcastId: string }) => {
-        const response = await fetch(
-            `https://api.allorigins.win/get?url=${encodeURIComponent(
-                payload.feedUrl
-            )}`
+        const storageEpisodesString = localStorage.getItem(
+            `podcastDetailEpisodes-${payload.podcastId}`
         );
-        const feedResponse = await response.json();
-
-        return {
-            responseXml: feedResponse.contents,
-            podcastId: payload.podcastId
-        };
-    }
-);
-
-export const podcastDetailSlice = createSlice({
-    name: 'podcastDetail',
-    initialState,
-    reducers: {
-        setEpisodesFromStorage: (state, action) => {
-            state.episodes = action.payload;
-        },
-        setPodcastDetailFromStorage: (state, action) => {
-            state.record = action.payload;
-        }
-    },
-    extraReducers: (builder) => {
-        builder.addCase(fetchPodcastDetail.fulfilled, (state, action) => {
-            state.status = 'succeeded';
-            state.record = action.payload.data;
-            localStorage.setItem(
-                `podcastDetail-${action.payload.podcastId}`,
-                JSON.stringify(action.payload.data)
+        const lastUpdatedString = localStorage.getItem(
+            `podcastDetailEpisodes-${payload.podcastId}_lastUpdated`
+        );
+        if (storageEpisodesString && !doesDataNeedRefresh(lastUpdatedString)) {
+            const parsedEpisodes = JSON.parse(storageEpisodesString);
+            return Promise.resolve({
+                episodes: parsedEpisodes,
+                podcastId: payload.podcastId
+            });
+        } else {
+            const response = await fetch(
+                `https://api.allorigins.win/get?url=${encodeURIComponent(
+                    payload.feedUrl
+                )}`
             );
-            localStorage.setItem(
-                `podcastDetail-${action.payload.podcastId}_lastUpdated`,
-                Date.now().toString()
-            );
-        });
-        builder.addCase(fetchPodcastDetail.rejected, (state) => {
-            state.status = 'failed';
-            state.record = undefined;
-        });
-        builder.addCase(fetchPodcastDetail.pending, (state) => {
-            state.status = 'fetching';
-        });
+            const feedResponse = await response.json();
 
-        builder.addCase(fetchPodcastEpisodes.fulfilled, (state, action) => {
             const parsedXml = new window.DOMParser().parseFromString(
-                action.payload.responseXml,
+                feedResponse.contents,
                 'text/xml'
             );
             const episodes = parsedXml.getElementsByTagName('item');
@@ -134,16 +128,42 @@ export const podcastDetailSlice = createSlice({
             }
 
             localStorage.setItem(
-                `podcastDetailEpisodes-${action.payload.podcastId}`,
+                `podcastDetailEpisodes-${payload.podcastId}`,
                 JSON.stringify(parsedEpisodes)
             );
             localStorage.setItem(
-                `podcastDetailEpisodes-${action.payload.podcastId}_lastUpdated`,
+                `podcastDetailEpisodes-${payload.podcastId}_lastUpdated`,
                 Date.now().toString()
             );
 
+            return {
+                episodes: parsedEpisodes,
+                podcastId: payload.podcastId
+            };
+        }
+    }
+);
+
+export const podcastDetailSlice = createSlice({
+    name: 'podcastDetail',
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder.addCase(fetchPodcastDetail.fulfilled, (state, action) => {
             state.status = 'succeeded';
-            state.episodes = parsedEpisodes;
+            state.record = action.payload.data;
+        });
+        builder.addCase(fetchPodcastDetail.rejected, (state) => {
+            state.status = 'failed';
+            state.record = undefined;
+        });
+        builder.addCase(fetchPodcastDetail.pending, (state) => {
+            state.status = 'fetching';
+        });
+
+        builder.addCase(fetchPodcastEpisodes.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+            state.episodes = action.payload.episodes;
         });
         builder.addCase(fetchPodcastEpisodes.rejected, (state) => {
             state.status = 'failed';
@@ -154,8 +174,5 @@ export const podcastDetailSlice = createSlice({
         });
     }
 });
-
-export const { setEpisodesFromStorage, setPodcastDetailFromStorage } =
-    podcastDetailSlice.actions;
 
 export default podcastDetailSlice.reducer;
